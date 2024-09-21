@@ -1,146 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
     <title>acerola's epic color palettes</title>
-</head>
+  </head>
 
-<style>
+  <style>
     body {
-        background-color: #332F35;
-        color: white;
+      background-color: #332f35;
+      color: white;
     }
 
     #color-form {
-        margin-bottom: 1em;
+      margin-bottom: 1em;
     }
 
     #click-instructions {
-        display: none;
+      display: none;
     }
 
     #result {
-        display: flex;
+      display: flex;
     }
 
     #palettes {
-        margin-right: 2em;
+      margin-right: 2em;
     }
 
     #details {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        padding-top: 1.125em;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      padding-top: 1.125em;
     }
 
     #details-color {
-        width: 8.75em;
-        height: 8.75em;
-        margin-bottom: .5em;
+      width: 8.75em;
+      height: 8.75em;
+      margin-bottom: 0.5em;
     }
-</style>
+  </style>
 
-<body>
+  <body>
     <h1>acerola's epic color palettes</h1>
-    <p>Generate as many palettes as you want until you find one you like. Then take a picture of the palettes and tell Acerola which one you picked.</p>
+    <p>
+      Generate as many palettes as you want until you find one you like.
+      Then take a picture of the palettes and tell Acerola which one you
+      picked.
+    </p>
     <form id="color-form">
-        <label for="color-mode">Hue mode:</label>
-        <select id="color-mode" name="color-mode">
-            <option value="monochromatic">Monochromatic</option>
-            <option value="analogous">Analogous</option>
-            <option value="complementary">Complementary</option>
-            <option value="triadic complementary">Triadic Complementary</option>
-            <option value="tetradic complementary">Tetradic Complementary</option>
-        </select>
-        <label for="color-count">Color count:</label>
-        <input id="color-count" name="color-count" type="number" min="3" max="16" value="8" />
-        <input type="submit" value="Generate" />
+      <label for="color-mode">Hue mode:</label>
+      <select id="color-mode" name="color-mode">
+        <option value="monochromatic">Monochromatic</option>
+        <option value="analogous">Analogous</option>
+        <option value="complementary">Complementary</option>
+        <option value="triadic complementary">
+          Triadic Complementary
+        </option>
+        <option value="tetradic complementary">
+          Tetradic Complementary
+        </option>
+      </select>
+      <label for="color-count">Color count:</label>
+      <input
+        id="color-count"
+        name="color-count"
+        type="number"
+        min="3"
+        max="16"
+        value="8" />
+      <input type="submit" value="Generate" />
     </form>
     <p id="click-instructions">click a color to see hex + rgb</p>
     <div id="result">
-        <div id="palettes"></div>
-        <div id="details">
-            <div id="details-color"></div>
-            <span id="details-hex"></span>
-            <span id="details-rgb"></span>
-        </div>
+      <div id="palettes"></div>
+      <div id="details">
+        <div id="details-color"></div>
+        <span id="details-hex"></span>
+        <span id="details-rgb"></span>
+      </div>
     </div>
     <script src="./colors.js"></script>
     <script>
-        const getHexFromRGB = (rgb) => `#${Number(rgb[0]).toString(16).padStart(2, "0")}${Number(rgb[1]).toString(16).padStart(2, "0")}${Number(rgb[2]).toString(16).padStart(2, "0")}`;
+      const getHexFromRGB = (rgb) =>
+        `#${Number(rgb[0]).toString(16).padStart(2, '0')}${Number(
+          rgb[1],
+        )
+          .toString(16)
+          .padStart(2, '0')}${Number(rgb[2])
+          .toString(16)
+          .padStart(2, '0')}`;
 
-        const getFakeResult = () => {
-            const palettesCount = 4;
-            const colorsCounts = 16;
-            const palettes = [];
-            for (let i = 0; i < palettesCount; i++) {
-                const colors = [];
-                for (let j = 0; j < colorsCounts; j++) {
-                    colors.push({
-                        rgb: [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]
-                    });
-                }
-                palettes.push({
-                    colors
-                });
-            }
-            return palettes;
-        }
-
-        const handleResult = (palettes) => {
-            const palettesElement = document.getElementById("palettes");
-            palettesElement.innerHTML = "";
-            palettes.forEach((palette, paletteIndex) => {
-                const paletteElement = document.createElement("div");
-                palettesElement.appendChild(paletteElement);
-                const paletteLabelElement = document.createElement("span");
-                paletteLabelElement.innerText = `Palette ${paletteIndex + 1}:`
-                paletteLabelElement.style.lineHeight = "1";
-                paletteLabelElement.style.display = "block";
-                paletteLabelElement.style.marginBottom = ".125em";
-                paletteElement.appendChild(paletteLabelElement);
-                const paletteColorsElement = document.createElement("div");
-                paletteColorsElement.style.display = "flex";
-                paletteColorsElement.style.flexWrap = "wrap";
-                paletteColorsElement.style.marginBottom = ".25em";
-                paletteElement.appendChild(paletteColorsElement);
-                for (const color of palette) {
-                    const hex = getHexFromRGB(color);
-                    const paletteColorElement = document.createElement("div");
-                    paletteColorElement.addEventListener("click", () => {
-                        const detailsColor = document.getElementById("details-color");
-                        const detailsHex = document.getElementById("details-hex");
-                        const detailsRGB = document.getElementById("details-rgb");
-                        detailsColor.style.backgroundColor = hex;
-                        detailsHex.innerText = `Hex: ${hex}`;
-                        detailsRGB.innerText = `RGB: (${color[0]}, ${color[1]}, ${color[2]})`;
-                    });
-                    paletteColorElement.style.backgroundColor = hex;
-                    paletteColorElement.style.width = "2em";
-                    paletteColorElement.style.height = "2em";
-                    paletteColorsElement.appendChild(paletteColorElement);
-                }
+      const getFakeResult = () => {
+        const palettesCount = 4;
+        const colorsCounts = 16;
+        const palettes = [];
+        for (let i = 0; i < palettesCount; i++) {
+          const colors = [];
+          for (let j = 0; j < colorsCounts; j++) {
+            colors.push({
+              rgb: [
+                Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+                Math.floor(Math.random() * 256),
+              ],
             });
+          }
+          palettes.push({
+            colors,
+          });
         }
+        return palettes;
+      };
 
-        document.getElementById("color-form").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const colorMode = document.getElementById("color-mode");
-            const colorCount = document.getElementById("color-count");
-            const detailsColor = document.getElementById("details-color");
-            const detailsHex = document.getElementById("details-hex");
-            const detailsRGB = document.getElementById("details-rgb");
-            detailsColor.style.backgroundColor = "";
-            detailsHex.innerText = "";
-            detailsRGB.innerText = "";
-            const result = generatePalettes(colorMode.value, colorCount.value);
-            handleResult(result);
-            document.getElementById("click-instructions").style.display = "block";
+      const handleResult = (palettes) => {
+        const palettesElement = document.getElementById('palettes');
+        palettesElement.innerHTML = '';
+        palettes.forEach((palette, paletteIndex) => {
+          const paletteElement = document.createElement('div');
+          palettesElement.appendChild(paletteElement);
+          const paletteLabelElement = document.createElement('span');
+          paletteLabelElement.innerText = `Palette ${
+            paletteIndex + 1
+          }:`;
+          paletteLabelElement.style.lineHeight = '1';
+          paletteLabelElement.style.display = 'block';
+          paletteLabelElement.style.marginBottom = '.125em';
+          paletteElement.appendChild(paletteLabelElement);
+          const paletteColorsElement = document.createElement('div');
+          paletteColorsElement.style.display = 'flex';
+          paletteColorsElement.style.flexWrap = 'wrap';
+          paletteColorsElement.style.marginBottom = '.25em';
+          paletteElement.appendChild(paletteColorsElement);
+          for (const color of palette) {
+            const hex = getHexFromRGB(color);
+            const paletteColorElement = document.createElement('div');
+            paletteColorElement.addEventListener('click', () => {
+              const detailsColor =
+                document.getElementById('details-color');
+              const detailsHex = document.getElementById('details-hex');
+              const detailsRGB = document.getElementById('details-rgb');
+              detailsColor.style.backgroundColor = hex;
+              detailsHex.innerText = `Hex: ${hex}`;
+              detailsRGB.innerText = `RGB: (${color[0]}, ${color[1]}, ${color[2]})`;
+            });
+            paletteColorElement.style.backgroundColor = hex;
+            paletteColorElement.style.width = '2em';
+            paletteColorElement.style.height = '2em';
+            paletteColorsElement.appendChild(paletteColorElement);
+          }
+        });
+      };
+
+      document
+        .getElementById('color-form')
+        .addEventListener('submit', (e) => {
+          e.preventDefault();
+          const colorMode = document.getElementById('color-mode');
+          const colorCount = document.getElementById('color-count');
+          const detailsColor = document.getElementById('details-color');
+          const detailsHex = document.getElementById('details-hex');
+          const detailsRGB = document.getElementById('details-rgb');
+          detailsColor.style.backgroundColor = '';
+          detailsHex.innerText = '';
+          detailsRGB.innerText = '';
+          const result = generatePalettes(
+            colorMode.value,
+            colorCount.value,
+          );
+          handleResult(result);
+          document.getElementById('click-instructions').style.display =
+            'block';
         });
     </script>
-</body>
-
+  </body>
 </html>
