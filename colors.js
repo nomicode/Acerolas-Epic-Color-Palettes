@@ -1,22 +1,32 @@
 // Acerola's code
 function hslToRgb(h, s, l) {
-  h = h % 1;
+  h %= 1;
   var r, g, b;
 
   if (s == 0) {
     r = g = b = l; // achromatic
   } else {
-    function hue2rgb(p, q, t) {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) {
+        t += 1;
+      }
+      if (t > 1) {
+        t -= 1;
+      }
+      if (t < 1 / 6) {
+        return p + (q - p) * 6 * t;
+      }
+      if (t < 1 / 2) {
+        return q;
+      }
+      if (t < 2 / 3) {
+        return p + (q - p) * (2 / 3 - t) * 6;
+      }
       return p;
-    }
+    };
 
-    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    var p = 2 * l - q;
+    let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    let p = 2 * l - q;
 
     r = hue2rgb(p, q, h + 1 / 3);
     g = hue2rgb(p, q, h);
@@ -29,11 +39,11 @@ function hslToRgb(h, s, l) {
 function hsvToRgb(h, s, v) {
   var r, g, b;
 
-  var i = Math.floor(h * 6);
-  var f = h * 6 - i;
-  var p = v * (1 - s);
-  var q = v * (1 - f * s);
-  var t = v * (1 - (1 - f) * s);
+  let i = Math.floor(h * 6);
+  let f = h * 6 - i;
+  let p = v * (1 - s);
+  let q = v * (1 - f * s);
+  let t = v * (1 - (1 - f) * s);
 
   switch (i % 6) {
     case 0: r = v, g = t, b = p; break;
@@ -83,7 +93,7 @@ function randomRange(min, max) {
 function generateHSL(HUE_MODE, settings) {
   let hslColors = []
 
-  let hueBase = settings.hueBase;
+  let {hueBase} = settings;
   let hueContrast = Lerp(0.33, 1.0, settings.hueContrast);
 
   let saturationBase = Lerp(0.01, 0.5, settings.saturationBase);
@@ -95,7 +105,7 @@ function generateHSL(HUE_MODE, settings) {
   let lightnessFixed = Lerp(0.3, 0.85, settings.fixed)
 
 
-  let saturationConstant = settings.saturationConstant;
+  let {saturationConstant} = settings;
   let lightnessConstant = !saturationConstant;
 
   if (HUE_MODE == "monochromatic") {
@@ -108,20 +118,35 @@ function generateHSL(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast;
 
-    if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "monochromatic") {
+      hueOffset *= 0.0;
+    }
+    if (HUE_MODE == "analagous") {
+      hueOffset *= 0.25;
+    }
+    if (HUE_MODE == "complementary") {
+      hueOffset *= 0.33;
+    }
+    if (HUE_MODE == "triadic complementary") {
+      hueOffset *= 0.66;
+    }
+    if (HUE_MODE == "tetradic complementary") {
+      hueOffset *= 0.75;
+    }
 
-    if (HUE_MODE != "monochromatic")
+    if (HUE_MODE != "monochromatic") {
       hueOffset += (Math.random() * 2 - 1) * 0.01;
+    }
 
     let saturation = saturationBase + linearIterator * saturationContrast;
     let lightness = lightnessBase + linearIterator * lightnessContrast;
 
-    if (saturationConstant) saturation = saturationFixed;
-    if (lightnessConstant) lightness = lightnessFixed;
+    if (saturationConstant) {
+      saturation = saturationFixed;
+    }
+    if (lightnessConstant) {
+      lightness = lightnessFixed;
+    }
 
     hslColors.push(hslToRgb(hueBase + hueOffset, saturation, lightness));
   }
@@ -132,7 +157,7 @@ function generateHSL(HUE_MODE, settings) {
 function generateHSV(HUE_MODE, settings) {
   let hsvColors = []
 
-  let hueBase = settings.hueBase;
+  let {hueBase} = settings;
   let hueContrast = Lerp(0.33, 1.0, settings.hueContrast);
 
   let saturationBase = Lerp(0.01, 0.5, settings.saturationBase);
@@ -143,7 +168,7 @@ function generateHSV(HUE_MODE, settings) {
   let valueContrast = Lerp(0.1, 1 - valueBase, settings.luminanceContrast);
   let valueFixed = Lerp(0.3, 1.0, settings.fixed);
 
-  let saturationConstant = settings.saturationConstant;
+  let {saturationConstant} = settings;
   let valueConstant = !saturationConstant;
 
   if (HUE_MODE == "monochromatic") {
@@ -156,20 +181,35 @@ function generateHSV(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast;
 
-    if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "monochromatic") {
+      hueOffset *= 0.0;
+    }
+    if (HUE_MODE == "analagous") {
+      hueOffset *= 0.25;
+    }
+    if (HUE_MODE == "complementary") {
+      hueOffset *= 0.33;
+    }
+    if (HUE_MODE == "triadic complementary") {
+      hueOffset *= 0.66;
+    }
+    if (HUE_MODE == "tetradic complementary") {
+      hueOffset *= 0.75;
+    }
 
-    if (HUE_MODE != "monochromatic")
+    if (HUE_MODE != "monochromatic") {
       hueOffset += (Math.random() * 2 - 1) * 0.01;
+    }
 
     let saturation = saturationBase + linearIterator * saturationContrast;
     let value = valueBase + linearIterator * valueContrast;
 
-    if (saturationConstant) saturation = saturationFixed;
-    if (valueConstant) value = valueFixed;
+    if (saturationConstant) {
+      saturation = saturationFixed;
+    }
+    if (valueConstant) {
+      value = valueFixed;
+    }
 
     hsvColors.push(hsvToRgb(hueBase + hueOffset, saturation, value));
   }
@@ -204,20 +244,35 @@ function generateOKLCH(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast * 2 * Math.PI + (Math.PI / 4);
 
-    if (HUE_MODE == "monochromatic") hueOffset *= 0.0;
-    if (HUE_MODE == "analagous") hueOffset *= 0.25;
-    if (HUE_MODE == "complementary") hueOffset *= 0.33;
-    if (HUE_MODE == "triadic complementary") hueOffset *= 0.66;
-    if (HUE_MODE == "tetradic complementary") hueOffset *= 0.75;
+    if (HUE_MODE == "monochromatic") {
+      hueOffset *= 0.0;
+    }
+    if (HUE_MODE == "analogous") {
+      hueOffset *= 0.25;
+    }
+    if (HUE_MODE == "complementary") {
+      hueOffset *= 0.33;
+    }
+    if (HUE_MODE == "triadic complementary") {
+      hueOffset *= 0.66;
+    }
+    if (HUE_MODE == "tetradic complementary") {
+      hueOffset *= 0.75;
+    }
 
-    if (HUE_MODE != "monochromatic")
+    if (HUE_MODE != "monochromatic") {
       hueOffset += (Math.random() * 2 - 1) * 0.01;
+    }
 
     let chroma = chromaBase + linearIterator * chromaContrast;
     let lightness = lightnessBase + linearIterator * lightnessContrast;
 
-    if (chromaConstant) chroma = chromaFixed;
-    if (lightnessConstant) lightness = lightnessFixed;
+    if (chromaConstant) {
+      chroma = chromaFixed;
+    }
+    if (lightnessConstant) {
+      lightness = lightnessFixed;
+    }
 
     let lab = oklch_to_oklab(lightness, chroma, hueBase + hueOffset);
     let rgb = oklab_to_linear_srgb(lab[0], lab[1], lab[2]);
