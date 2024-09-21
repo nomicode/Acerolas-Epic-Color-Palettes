@@ -90,6 +90,38 @@ function randomRange(min, max) {
   return Math.random() * (max - min) + min;
 }
 
+function applyHueMode(hueOffset, HUE_MODE) {
+  // These values represent fractions of the color wheel and use color theory
+  // to create different color harmonies
+  const hueModeFactors = {
+    "monochromatic": 0.0,           // No hue change
+    "analogous": 0.25,              // 1/4 of the color wheel (30 degrees)
+    "complementary": 0.33,          // 1/3 of the color wheel (120 degrees)
+    "triadic complementary": 0.66,  // 2/3 of the color wheel (240 degrees)
+    "tetradic complementary": 0.75  // 3/4 of the color wheel (270 degrees)
+  };
+
+  // TODO: Using an enum or constants the values of HUE_MODE would improve
+  // type safety and potentially performance. It would also make the code more
+  // resistant to typos in string literals.
+
+  // Apply the appropriate factor based on the selected hue mode
+  if (HUE_MODE in hueModeFactors) {
+    hueOffset *= hueModeFactors[HUE_MODE];
+  } else {
+    throw new Error(`Invalid HUE_MODE: ${HUE_MODE}`);
+  }
+
+  // Add a small random variation to the hue offset for non-monochromatic modes
+  if (HUE_MODE !== "monochromatic") {
+    // FIXME: Move constant to the top of the file for easier tweaking
+    const HUE_VARIATION_RANGE = 0.01;
+    hueOffset += (Math.random() * 2 - 1) * HUE_VARIATION_RANGE;
+  }
+
+  return hueOffset;
+}
+
 function generateHSL(HUE_MODE, settings) {
   let hslColors = []
 
@@ -118,25 +150,7 @@ function generateHSL(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast;
 
-    if (HUE_MODE == "monochromatic") {
-      hueOffset *= 0.0;
-    }
-    if (HUE_MODE == "analagous") {
-      hueOffset *= 0.25;
-    }
-    if (HUE_MODE == "complementary") {
-      hueOffset *= 0.33;
-    }
-    if (HUE_MODE == "triadic complementary") {
-      hueOffset *= 0.66;
-    }
-    if (HUE_MODE == "tetradic complementary") {
-      hueOffset *= 0.75;
-    }
-
-    if (HUE_MODE != "monochromatic") {
-      hueOffset += (Math.random() * 2 - 1) * 0.01;
-    }
+    hueOffset = applyHueMode(hueOffset, HUE_MODE);
 
     let saturation = saturationBase + linearIterator * saturationContrast;
     let lightness = lightnessBase + linearIterator * lightnessContrast;
@@ -181,25 +195,7 @@ function generateHSV(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast;
 
-    if (HUE_MODE == "monochromatic") {
-      hueOffset *= 0.0;
-    }
-    if (HUE_MODE == "analagous") {
-      hueOffset *= 0.25;
-    }
-    if (HUE_MODE == "complementary") {
-      hueOffset *= 0.33;
-    }
-    if (HUE_MODE == "triadic complementary") {
-      hueOffset *= 0.66;
-    }
-    if (HUE_MODE == "tetradic complementary") {
-      hueOffset *= 0.75;
-    }
-
-    if (HUE_MODE != "monochromatic") {
-      hueOffset += (Math.random() * 2 - 1) * 0.01;
-    }
+    hueOffset = applyHueMode(hueOffset, HUE_MODE);
 
     let saturation = saturationBase + linearIterator * saturationContrast;
     let value = valueBase + linearIterator * valueContrast;
@@ -244,25 +240,7 @@ function generateOKLCH(HUE_MODE, settings) {
 
     let hueOffset = linearIterator * hueContrast * 2 * Math.PI + (Math.PI / 4);
 
-    if (HUE_MODE == "monochromatic") {
-      hueOffset *= 0.0;
-    }
-    if (HUE_MODE == "analogous") {
-      hueOffset *= 0.25;
-    }
-    if (HUE_MODE == "complementary") {
-      hueOffset *= 0.33;
-    }
-    if (HUE_MODE == "triadic complementary") {
-      hueOffset *= 0.66;
-    }
-    if (HUE_MODE == "tetradic complementary") {
-      hueOffset *= 0.75;
-    }
-
-    if (HUE_MODE != "monochromatic") {
-      hueOffset += (Math.random() * 2 - 1) * 0.01;
-    }
+    hueOffset = applyHueMode(hueOffset, HUE_MODE);
 
     let chroma = chromaBase + linearIterator * chromaContrast;
     let lightness = lightnessBase + linearIterator * lightnessContrast;
